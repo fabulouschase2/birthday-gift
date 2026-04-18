@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>✨ Happy Birthday, Sis ✨ | A Heartfelt Celebration</title>
+    <!-- Google Fonts: Elegant serif -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for festive burst (lightweight) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* optional, avoids accidental text selection while moving mouse */
+        }
+        body {
+            background: #0a0015;
+            overflow-x: hidden;
+            font-family: 'Playfair Display', Georgia, serif;
+            min-height: 100vh;
+        }
+        /* main container */
+        .birthday-world {
+            position: relative;
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 10%, #0e0420, #080014);
+            overflow: hidden;
+        }
+        /* canvas for particle system */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        /* floating stars container */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background: #fffef0;
+            border-radius: 50%;
+            box-shadow: 0 0 2px rgba(255,215,0,0.6);
+            animation: twinkle ease-in-out infinite;
+        }
+        /* main card container */
+        .card-wrapper {
+            position: relative;
+            z-index: 20;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .glass-card {
+            background: rgba(255, 250, 245, 0.94);
+            backdrop-filter: blur(24px);
+            border-radius: 48px;
+            padding: 3rem 3rem 3.5rem;
+            max-width: 760px;
+            width: 100%;
+            transition: transform 0.15s ease-out, box-shadow 0.3s ease;
+            box-shadow: 0 0 0 1px rgba(255, 245, 240, 0.5) inset, 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 90px rgba(212, 80, 122, 0.3);
+            animation: cardPop 1.1s cubic-bezier(0.2, 1.1, 0.4, 1) forwards;
+        }
+        /* animations */
+        @keyframes cardPop {
+            0% { opacity: 0; transform: scale(0.75) translateY(70px); }
+            70% { opacity: 0.9; transform: scale(1.02) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes slideDownGlow {
+            from { opacity: 0; transform: translateY(-25px); filter: blur(2px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        @keyframes fadeInBounce {
+            0% { opacity: 0; transform: scale(0.2) rotate(-10deg); }
+            60% { transform: scale(1.1) rotate(2deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        @keyframes floatCake {
+            0% { opacity: 0; transform: translateY(40px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); box-shadow: 0 0 5px rgba(255,215,0,0.8); }
+        }
+        @keyframes flicker {
+            0% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+            100% { transform: scaleY(1.2) scaleX(0.9); opacity: 1; }
+        }
+        @keyframes pulseHeart {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 0px rgba(212,80,122,0); }
+            50% { transform: scale(1.15); text-shadow: 0 0 12px rgba(212,80,122,0.5); }
+        }
+        /* responsive adjustments */
+        @media (max-width: 640px) {
+            .glass-card {
+                padding: 1.8rem !important;
+            }
+        }
+        .cake-svg-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: floatCake 1.2s ease 0.7s both;
+        }
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1.8rem 0 1.5rem;
+            animation: slideDownGlow 0.8s ease 0.9s both;
+        }
+        .divider-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e07a9e, transparent);
+        }
+        .message-section, .list-section, .wish-section, .signoff-section {
+            animation: slideDownGlow 0.8s ease forwards;
+        }
+        .message-section { animation-delay: 1.0s; }
+        .list-section { animation-delay: 1.2s; }
+        .wish-section { animation-delay: 1.4s; }
+        .signoff-section { animation-delay: 1.6s; }
+        .highlight-quote {
+            background: linear-gradient(105deg, rgba(220, 80, 130, 0.08), rgba(180, 60, 110, 0.08));
+            border-left: 5px solid #d4507a;
+            border-radius: 0 18px 18px 0;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+        .extraordinary-box {
+            background: rgba(230, 140, 170, 0.06);
+            border: 1px solid rgba(212, 80, 122, 0.2);
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+        .wish-glow {
+            background: linear-gradient(125deg, rgba(255, 220, 200, 0.3), rgba(255, 190, 210, 0.2));
+            border-radius: 28px;
+            padding: 1.6rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 200, 160, 0.5);
+        }
+        .heart-pulse {
+            display: inline-block;
+            animation: pulseHeart 2s infinite ease-in-out;
+        }
+        /* list custom */
+        .custom-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .custom-list li {
+            font-size: 0.97rem;
+            color: #581c38;
+            padding: 0.7rem 0;
+            border-bottom: 1px solid rgba(200, 100, 140, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            line-height: 1.55;
+        }
+        .custom-list li:last-child {
+            border-bottom: none;
+        }
+        .list-icon {
+            font-size: 1.35rem;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="birthday-world">
+    <!-- Particle Canvas -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Stars (dynamic JS generated but static positions) -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Main Card Content -->
+    <div class="card-wrapper">
+        <div class="glass-card" id="birthdayCard">
+            <!-- Decorative icons -->
+            <div style="font-size: 2.7rem; text-align: center; margin-bottom: 1rem; animation: fadeInBounce 0.7s ease 0.2s both; letter-spacing: 0.6rem;">
+                🌸 💝 🌸
+            </div>
+            <!-- Main Title -->
+            <h1 style="font-size: clamp(2.2rem, 9vw, 4rem); font-weight: 800; background: linear-gradient(125deg, #9b1d60 0%, #c91e6f 50%, #ff5c8a 100%); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-align: center; line-height: 1.2; margin-bottom: 0.5rem; animation: slideDownGlow 0.9s ease 0.4s both;">
+                Happy Birthday,<br />Beloved Sis
+            </h1>
+            <p style="font-size: 1.25rem; font-style: italic; color: #b05080; text-align: center; margin-bottom: 2rem; font-weight: 500; animation: slideDownGlow 0.9s ease 0.6s both;">
+                ✨ The world shines brighter because of you ✨
+            </p>
+
+            <!-- Animated Cake SVG -->
+            <div class="cake-svg-container">
+                <svg viewBox="0 0 280 180" width="210" height="135" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <filter id="cakeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="2.5" result="blur"/>
+                            <feMerge>
+                                <feMergeNode in="blur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <!-- Bottom tier -->
+                    <rect x="35" y="110" width="210" height="65" rx="14" fill="#f48aaa" filter="url(#cakeGlow)"/>
+                    <rect x="20" y="100" width="240" height="18" rx="10" fill="#e06088"/>
+                    <!-- Middle tier -->
+                    <rect x="60" y="70" width="160" height="42" rx="10" fill="#f8b8cc"/>
+                    <rect x="52" y="60" width="176" height="15" rx="8" fill="#f0a0b8"/>
+                    <!-- Top tier -->
+                    <rect x="90" y="38" width="100" height="32" rx="9" fill="#f4a0b8"/>
+                    <rect x="82" y="28" width="116" height="14" rx="7" fill="#e888a8"/>
+                    <!-- Candles -->
+                    <rect x="100" y="10" width="7" height="23" rx="4" fill="#e0b060"/>
+                    <rect x="135" y="10" width="7" height="23" rx="4" fill="#c070d8"/>
+                    <rect x="170" y="10" width="7" height="23" rx="4" fill="#70b0e0"/>
+                    <!-- Flames -->
+                    <ellipse cx="103.5" cy="10" rx="7" ry="13" fill="#ffb82e" style="animation: flicker 0.5s ease-in-out infinite"/>
+                    <ellipse cx="103.5" cy="12" rx="4" ry="8" fill="#ffec80"/>
+                    <ellipse cx="138.5" cy="10" rx="7" ry="13" fill="#ff9040" style="animation: flicker 0.5s ease-in-out 0.2s infinite"/>
+                    <ellipse cx="138.5" cy="12" rx="4" ry="8" fill="#ffe074"/>
+                    <ellipse cx="173.5" cy="10" rx="7" ry="13" fill="#ff6060" style="animation: flicker 0.5s ease-in-out 0.35s infinite"/>
+                    <ellipse cx="173.5" cy="12" rx="4" ry="8" fill="#ffb878"/>
+                    <!-- Sprinkles -->
+                    <circle cx="70" cy="100" r="5" fill="#fff" opacity="0.9"/>
+                    <circle cx="110" cy="92" r="5" fill="#fff9c4" opacity="0.8"/>
+                    <circle cx="180" cy="94" r="6" fill="#ffe0f0" opacity="0.9"/>
+                    <circle cx="210" cy="95" r="5" fill="#ffd0e0"/>
+                </svg>
+            </div>
+
+            <!-- Divider -->
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span style="font-size: 1.8rem;">🎀</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Heartfelt messages -->
+            <div class="message-section">
+                <p style="font-size: 1.05rem; line-height: 1.9; color: #3e102b; margin-bottom: 1.4rem;">
+                    You are the thread that weaves our entire family together—the one who remembers every dream, wipes away every tear, and turns ordinary moments into unforgettable memories.
+                </p>
+                <div class="highlight-quote">
+                    <p style="font-size: 1.28rem; font-style: italic; color: #941f5c; text-align: center; margin: 0; font-weight: 600;">
+                        “She leads with love, and love leads everyone home.” 💕
+                    </p>
+                </div>
+                <p style="font-size: 1.05rem; line-height: 1.9; color: #3e102b; margin-bottom: 1.8rem;">
+                    To your juniors, you are their hero. You give them the most precious gift — the certainty that they are loved, seen, and never alone. The way their eyes light up when you walk in the room? That is the legacy you have built.
+                </p>
+            </div>
+
+            <!-- What makes you extraordinary -->
+            <div class="extraordinary-box">
+                <h3 style="font-size: 0.85rem; font-weight: 800; color: #bc3f6b; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 8px;">
+                    <span>🌟</span> THE MAGIC YOU CARRY
+                </h3>
+                <ul class="custom-list">
+                    <li><span class="list-icon">💛</span> <span>You see the magic in small moments and teach the little ones to believe in it.</span></li>
+                    <li><span class="list-icon">🌺</span> <span>Your patience, hugs, and laughter are the soundtrack of our family story.</span></li>
+                    <li><span class="list-icon">💪</span> <span>You carry so much for everyone and still find room to pour out more love.</span></li>
+                    <li><span class="list-icon">🌈</span> <span>You are their safe place, role model, biggest fan, and favourite person.</span></li>
+                </ul>
+            </div>
+
+            <!-- Birthday Wish -->
+            <div class="wish-glow">
+                <h3 style="font-size: 0.85rem; font-weight: 800; color: #b8476e; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.8rem;">🎁 A Birthday Wish For You</h3>
+                <p style="font-size: 1rem; color: #4a1e36; line-height: 1.85; margin: 0;">
+                    May this year return every ounce of love you've given. May you feel cherished the way you make others feel. May you laugh loud, rest deep, dream big, and be celebrated not just today — but every single day of your beautiful life.
+                </p>
+            </div>
+
+            <!-- Sign off -->
+            <div class="signoff-section" style="text-align: center;">
+                <p style="font-size: 1.25rem; font-style: italic; color: #98295e; line-height: 1.7; margin: 0 0 1rem 0;">
+                    With all our hearts, always —<br />Your family & your beloved little ones 🌸
+                </p>
+                <p class="heart-pulse" style="font-size: 2.2rem; margin: 0;">
+                    ❤️ 💖 💕 💗 ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 1. Particle System (Canvas) ----------
+        const canvas = document.getElementById('particleCanvas');
+        let ctx = canvas.getContext('2d');
+        let particles = [];
+        let animationId = null;
+        let mouseX = 0, mouseY = 0;
+        let mouseActive = false;
+
+        const colors = ['#ff85a1', '#ffb347', '#ffe066', '#ffd700', '#ff69b4', '#ff1493', '#ffa500', '#ff6b9d', '#ffb77c'];
+
+        function generateParticles(width, height) {
+            const count = Math.min(90, Math.floor(window.innerWidth / 18));
+            const newParticles = [];
+            for (let i = 0; i < count; i++) {
+                newParticles.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    vx: (Math.random() - 0.5) * 0.6,
+                    vy: (Math.random() - 0.5) * 0.6,
+                    size: Math.random() * 4 + 1.2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    opacity: Math.random() * 0.5 + 0.3,
+                    pulseSpeed: Math.random() * 0.02 + 0.008,
+                });
+            }
+            return newParticles;
+        }
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = generateParticles(canvas.width, canvas.height);
+        }
+
+        function animateParticles() {
+            if (!canvas || !ctx) return;
+            const w = canvas.width;
+            const h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            ctx.globalCompositeOperation = 'lighter';
+
+            for (let p of particles) {
+                p.x += p.vx;
+                p.y += p.vy;
+                // opacity wave
+                p.opacity += (Math.sin(Date.now() * p.pulseSpeed) * 0.008);
+                p.opacity = Math.min(0.85, Math.max(0.2, p.opacity));
+
+                // wrap around
+                if (p.x < 0) p.x = w;
+                if (p.x > w) p.x = 0;
+                if (p.y < 0) p.y = h;
+                if (p.y > h) p.y = 0;
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.opacity;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Interactive mouse glow effect
+            if (mouseActive && mouseX > 0 && mouseY > 0) {
+                const grad = ctx.createRadialGradient(mouseX, mouseY, 5, mouseX, mouseY, 70);
+                grad.addColorStop(0, 'rgba(255, 220, 180, 0.4)');
+                grad.addColorStop(1, 'rgba(255, 120, 160, 0)');
+                ctx.fillStyle = grad;
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                ctx.arc(mouseX, mouseY, 80, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            animationId = requestAnimationFrame(animateParticles);
+        }
+
+        function initCanvas() {
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+            });
+            animateParticles();
+        }
+
+        // Track mouse for glow effect + card tilt
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseActive = true;
+            // card tilt effect
+            const card = document.getElementById('birthdayCard');
+            if (card) {
+                const rect = card.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const moveX = (e.clientX - centerX) / 35;
+                const moveY = (e.clientY - centerY) / 35;
+                card.style.transform = `perspective(1200px) rotateY(${moveX}deg) rotateX(${-moveY}deg) translateZ(5px)`;
+            }
+        });
+        document.addEventListener('mouseleave', () => {
+            mouseActive = false;
+            const card = document.getElementById('birthdayCard');
+            if (card) card.style.transform = 'perspective(1200px) rotateY(0deg) rotateX(0deg) translateZ(0px)';
+        });
+
+        // ---------- 2. Star generation (static but twinkling) ----------
+        const starsContainer = document.getElementById('starsContainer');
+        const starCount = 85;
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.classList.add('star');
+            const size = Math.random() * 3 + 1;
+            const left = Math.random() * 100;
+            const top = Math.random() * 100;
+            const opacity = Math.random() * 0.6 + 0.3;
+            const duration = 2 + Math.random() * 5;
+            const delay = Math.random() * 5;
+            star.style.width = size + 'px';
+            star.style.height = size + 'px';
+            star.style.left = left + '%';
+            star.style.top = top + '%';
+            star.style.opacity = opacity;
+            star.style.animationDuration = duration + 's';
+            star.style.animationDelay = delay + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // ---------- 3. Confetti celebration on load ----------
+        function burstConfetti() {
+            canvasConfetti({ particleCount: 130, spread: 80, origin: { y: 0.6 }, startVelocity: 18, colors: ['#ff85a1', '#ffb347', '#ff69b4', '#ffd700', '#ff1493'], decay: 0.9 });
+            setTimeout(() => {
+                canvasConfetti({ particleCount: 60, spread: 55, origin: { y: 0.3, x: 0.2 }, colors: ['#ffb7c5', '#ffd966'] });
+                canvasConfetti({ particleCount: 60, spread: 55, origin: { y: 0.3, x: 0.8 }, colors: ['#f4a2c4', '#ffb347'] });
+            }, 300);
+        }
+
+        // start everything
+        initCanvas();
+        burstConfetti();
+
+        // Optional: re-trigger small confetti on window resize? no needed
+        // Additional: ensure canvas resize after fonts loaded (fine)
+    })();
+</script>
+</body>
+</html>
